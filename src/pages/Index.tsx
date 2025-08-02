@@ -2,6 +2,7 @@ import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { LinksList } from '@/components/links/LinksList';
 import { AdminButton } from '@/components/admin/AdminButton';
 import { MetaTags } from '@/components/seo/MetaTags';
+import { ManifestUpdater } from '@/components/seo/ManifestUpdater';
 import { useProfile } from '@/hooks/useProfile';
 import { useEffect } from 'react';
 
@@ -29,6 +30,7 @@ const Index = () => {
   return (
     <>
       <MetaTags profile={profile} />
+      <ManifestUpdater profile={profile} />
       <AdminButton />
       
       <div className="min-h-screen flex flex-col items-center justify-center p-6 relative">

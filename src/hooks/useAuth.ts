@@ -39,10 +39,15 @@ export function useAuth() {
 
   const signInWithMagicLink = async (email: string) => {
     setLoading(true);
+    
+    // Get redirect URL from environment or construct from current location
+    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    const redirectUrl = `${baseUrl}/admin`;
+    
     const { data, error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/admin`,
+        emailRedirectTo: redirectUrl,
       },
     });
     setLoading(false);

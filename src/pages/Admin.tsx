@@ -7,10 +7,11 @@ import { Link, ArrowLeft, BarChart3, Settings, Users, LinkIcon, LogOut } from 'l
 import { LinkEditor } from '@/components/admin/LinkEditor';
 import { ProfileEditor } from '@/components/admin/ProfileEditor';
 import { AdminLogin } from '@/components/admin/AdminLogin';
-import { useAuth } from '@/hooks/useAuth';
+import { AdminUserManagement } from '@/components/admin/AdminUserManagement';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 export default function Admin() {
-  const { user, isAuthenticated, loading, signOut } = useAuth();
+  const { user, adminUser, isAuthenticated, loading, signOut } = useAdminAuth();
   
   const handleSignOut = async () => {
     await signOut();
@@ -59,9 +60,16 @@ export default function Admin() {
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user?.email}
-            </span>
+            <div className="text-right">
+              <span className="text-sm text-muted-foreground">
+                Welcome, {user?.email}
+              </span>
+              {adminUser && (
+                <div className="text-xs text-muted-foreground">
+                  Role: {adminUser.role.replace('_', ' ')}
+                </div>
+              )}
+            </div>
             <Button onClick={handleSignOut} variant="outline" size="sm">
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
@@ -118,7 +126,7 @@ export default function Admin() {
 
         {/* Main Content */}
         <Tabs defaultValue="links" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${adminUser && ['super_admin', 'admin'].includes(adminUser.role) ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="links">
               <LinkIcon className="w-4 h-4 mr-2" />
               Links
@@ -131,6 +139,12 @@ export default function Admin() {
               <BarChart3 className="w-4 h-4 mr-2" />
               Analytics
             </TabsTrigger>
+            {adminUser && ['super_admin', 'admin'].includes(adminUser.role) && (
+              <TabsTrigger value="users">
+                <Users className="w-4 h-4 mr-2" />
+                Users
+              </TabsTrigger>
+            )}
           </TabsList>
           
           <TabsContent value="links" className="mt-6">
@@ -176,12 +190,18 @@ export default function Admin() {
               </CardContent>
             </Card>
           </TabsContent>
+          
+          {adminUser && ['super_admin', 'admin'].includes(adminUser.role) && (
+            <TabsContent value="users" className="mt-6">
+              <AdminUserManagement />
+            </TabsContent>
+          )}
         </Tabs>
 
         {/* Footer */}
         <div className="mt-8 text-center text-muted-foreground">
           <p className="text-sm">
-            FlexiBio Builder Admin Panel - Built with Supabase & React
+            Admin Panel - Built with Supabase & React
           </p>
         </div>
       </div>

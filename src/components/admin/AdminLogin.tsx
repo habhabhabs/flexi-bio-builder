@@ -6,11 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Key, Shield } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { toast } from 'react-hot-toast';
 
 export function AdminLogin() {
-  const { signInWithEmail, signInWithMagicLink, loading } = useAuth();
+  const { signInWithEmail, signInWithMagicLink, loading } = useAdminAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -70,7 +70,7 @@ export function AdminLogin() {
           </div>
           <CardTitle className="text-2xl">Admin Access</CardTitle>
           <CardDescription>
-            Sign in to access the FlexiBio Builder admin panel
+            Sign in to access the admin panel
           </CardDescription>
         </CardHeader>
         

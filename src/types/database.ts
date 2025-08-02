@@ -54,3 +54,30 @@ export interface LinkAnalytics {
   country: string | null;
   device_type: string | null;
 }
+
+export interface AdminUser {
+  id: string;
+  user_id: string;
+  email: string;
+  role: 'super_admin' | 'admin' | 'editor';
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  last_login: string | null;
+}
+
+export interface AdminDashboardStats {
+  active_links: number;
+  total_links: number;
+  total_clicks: number;
+  active_admins: number;
+  active_days_last_month: number;
+}
+
+export interface AvailableAuthUser {
+  id: string;
+  email: string;
+  created_at: string;
+  is_admin: boolean;
+}

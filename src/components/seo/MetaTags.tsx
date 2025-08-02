@@ -9,13 +9,23 @@ export function MetaTags({ profile }: MetaTagsProps) {
   useEffect(() => {
     if (!profile) return;
 
+    // Determine if FlexiBio Builder branding should be hidden
+    const hideFlexiBioReferences = profile.hide_footer;
+
     // Update document title
-    document.title = profile.seo_title || `${profile.display_name} - Links`;
+    if (hideFlexiBioReferences) {
+      document.title = profile.seo_title || `${profile.display_name} - Links` || 'Personal Links';
+    } else {
+      document.title = profile.seo_title || `${profile.display_name} - Links`;
+    }
 
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', profile.seo_description || profile.bio || '');
+      const defaultDescription = hideFlexiBioReferences 
+        ? profile.bio || 'Personal links and contact information'
+        : profile.bio || 'Enhanced personal linktree application built with React + Supabase';
+      metaDescription.setAttribute('content', profile.seo_description || defaultDescription);
     }
 
     // Update meta keywords
@@ -64,8 +74,15 @@ export function MetaTags({ profile }: MetaTagsProps) {
       }
     };
 
-    if (profile.og_title) updateOrCreateOGTag('og:title', profile.og_title);
-    if (profile.og_description) updateOrCreateOGTag('og:description', profile.og_description);
+    const defaultOGTitle = hideFlexiBioReferences 
+      ? `${profile.display_name} - Personal Links` || 'Personal Links'
+      : `${profile.display_name} - FlexiBio Builder` || 'FlexiBio Builder - Enhanced Personal Linktree';
+    const defaultOGDescription = hideFlexiBioReferences
+      ? profile.bio || 'Personal links and contact information'
+      : profile.bio || 'Enhanced personal linktree application built with React + Supabase';
+
+    updateOrCreateOGTag('og:title', profile.og_title || defaultOGTitle);
+    updateOrCreateOGTag('og:description', profile.og_description || defaultOGDescription);
     if (profile.og_image) updateOrCreateOGTag('og:image', profile.og_image);
     updateOrCreateOGTag('og:type', 'website');
 
@@ -82,10 +99,23 @@ export function MetaTags({ profile }: MetaTagsProps) {
       }
     };
 
+    const defaultTwitterTitle = hideFlexiBioReferences 
+      ? `${profile.display_name} - Personal Links` || 'Personal Links'
+      : `${profile.display_name} - FlexiBio Builder` || 'FlexiBio Builder - Enhanced Personal Linktree';
+    const defaultTwitterDescription = hideFlexiBioReferences
+      ? profile.bio || 'Personal links and contact information'
+      : profile.bio || 'Enhanced personal linktree application built with React + Supabase';
+
     updateOrCreateTwitterTag('twitter:card', profile.twitter_card_type);
-    if (profile.twitter_title) updateOrCreateTwitterTag('twitter:title', profile.twitter_title);
-    if (profile.twitter_description) updateOrCreateTwitterTag('twitter:description', profile.twitter_description);
+    updateOrCreateTwitterTag('twitter:title', profile.twitter_title || defaultTwitterTitle);
+    updateOrCreateTwitterTag('twitter:description', profile.twitter_description || defaultTwitterDescription);
     if (profile.twitter_image) updateOrCreateTwitterTag('twitter:image', profile.twitter_image);
+
+    // Update apple-mobile-web-app-title if hiding FlexiBio references
+    const appTitleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if (appTitleMeta && hideFlexiBioReferences) {
+      appTitleMeta.setAttribute('content', profile.display_name || 'Personal Links');
+    }
 
     // Custom head code injection
     if (profile.custom_head_code) {
