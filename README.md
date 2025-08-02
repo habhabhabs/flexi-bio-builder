@@ -71,6 +71,7 @@ For complete setup instructions, see our detailed documentation:
 
 - 📚 **[Supabase Setup Guide](./docs/SUPABASE_SETUP.md)** - Database configuration and schema setup
 - ☁️ **[AWS Setup Guide](./docs/AWS_SETUP.md)** - S3, CloudFront, and IAM configuration with least privilege policies
+- 🔐 **[GitHub Secrets Guide](./docs/GITHUB_SECRETS.md)** - Complete GitHub Actions secrets configuration
 - 🚀 **[Deployment Guide](./docs/DEPLOYMENT.md)** - Complete deployment process and troubleshooting
 
 ## 🚀 Deployment

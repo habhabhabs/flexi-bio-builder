@@ -41,15 +41,26 @@ VITE_FACEBOOK_PIXEL_ID=123456789012345
 
 ### 2. GitHub Repository Secrets
 
-In your GitHub repository settings, add these secrets:
+For complete setup of all GitHub Actions secrets, see the detailed guide:
+
+**📚 [GitHub Secrets Configuration Guide](./GITHUB_SECRETS.md)**
+
+**Quick Reference - Required Secrets:**
 
 | Secret Name | Source | Required |
 |-------------|--------|----------|
 | `VITE_SUPABASE_URL` | Supabase Dashboard → Settings → API | ✅ |
 | `VITE_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API | ✅ |
+| `VITE_APP_URL` | Your application URL | ✅ |
 | `AWS_ACCESS_KEY_ID` | IAM User credentials | ✅ |
 | `AWS_SECRET_ACCESS_KEY` | IAM User credentials | ✅ |
+| `S3_BUCKET_NAME` | Your S3 bucket name | ✅ |
 | `CLOUDFRONT_DISTRIBUTION_ID` | CloudFront console | ✅ |
+
+**Optional Analytics Secrets:**
+- `VITE_GOOGLE_ANALYTICS_ID`
+- `VITE_GOOGLE_TAG_MANAGER_ID`
+- `VITE_FACEBOOK_PIXEL_ID`
 
 ## Deployment Process
 

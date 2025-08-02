@@ -19,48 +19,13 @@ This guide provides step-by-step instructions for deploying FlexiBio Builder to 
 4. Configure bucket settings:
    - **Bucket name**: `linktree.alexkm.com` (must match your domain)
    - **AWS Region**: `us-east-1` (recommended for CloudFront)
-   - **Block Public Access**: Uncheck "Block all public access" ⚠️
-   - Check the acknowledgment box
+   - **Block Public Access**: Keep "Block all public access" CHECKED ✅ (for security)
    - Leave other settings as default
 5. Click **"Create bucket"**
 
-### 1.2 Configure Static Website Hosting
+### 1.2 Skip Static Website Hosting
 
-1. Select your newly created bucket
-2. Go to **Properties** tab
-3. Scroll to **Static website hosting**
-4. Click **"Edit"**
-5. Configure:
-   - **Static website hosting**: Enable
-   - **Hosting type**: Host a static website
-   - **Index document**: `index.html`
-   - **Error document**: `index.html` (for SPA routing)
-6. Click **"Save changes"**
-7. Note the **Bucket website endpoint** URL
-
-### 1.3 Configure Bucket Policy
-
-1. Go to **Permissions** tab
-2. Scroll to **Bucket policy**
-3. Click **"Edit"**
-4. Add the following policy (replace `your-bucket-name` with your actual bucket name):
-
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::linktree.alexkm.com/*"
-        }
-    ]
-}
-```
-
-5. Click **"Save changes"**
+**Note**: We will NOT enable static website hosting because we're using CloudFront Origin Access Control for better security. CloudFront will serve the files directly from the S3 bucket without making it publicly accessible.
 
 ## Step 2: Create IAM User for GitHub Actions
 
@@ -132,31 +97,92 @@ This guide provides step-by-step instructions for deploying FlexiBio Builder to 
     
     You won't be able to view the secret key again!
 
-## Step 3: Set Up CloudFront Distribution
+## Step 3: Set Up CloudFront Distribution with Origin Access Control
 
-### 3.1 Create Distribution
+### 3.1 Create Origin Access Control (OAC)
 
 1. Navigate to **CloudFront** service
+2. In the left sidebar, click **"Origin access"**
+3. Click **"Create origin access control"**
+4. Configure:
+   - **Name**: `linktree-alexkm-oac`
+   - **Description**: `Origin access control for linktree.alexkm.com S3 bucket`
+   - **Origin type**: S3
+   - **Signing behavior**: Sign requests (recommended)
+   - **Origin access control**: Leave default settings
+5. Click **"Create"**
+
+### 3.2 Create Distribution
+
+1. Navigate back to **CloudFront** → **Distributions**
 2. Click **"Create distribution"**
 3. Configure origin settings:
-   - **Origin domain**: Select your S3 bucket from dropdown
+   - **Origin domain**: Select your S3 bucket from dropdown (linktree.alexkm.com)
    - **Origin path**: Leave empty
-   - **Origin access**: Public (bucket must be publicly readable)
+   - **Origin access**: Origin access control settings (recommended)
+   - **Origin access control**: Select the OAC you created (`linktree-alexkm-oac`)
+   - **Enable Origin Shield**: No (optional, adds cost)
 4. Configure default cache behavior:
    - **Viewer protocol policy**: Redirect HTTP to HTTPS
-   - **Allowed HTTP methods**: GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE
+   - **Allowed HTTP methods**: GET, HEAD (sufficient for static site)
    - **Cache policy**: CachingOptimized
-   - **Origin request policy**: CORS-S3Origin
+   - **Origin request policy**: None (not needed for static content)
+   - **Response headers policy**: SecurityHeadersPolicy (optional, recommended for security)
 5. Configure distribution settings:
    - **Price class**: Use all edge locations (best performance)
    - **Alternate domain name (CNAME)**: `linktree.alexkm.com`
    - **Custom SSL certificate**: Request or import certificate
    - **Default root object**: `index.html`
+   - **Standard logging**: Off (or configure if you need access logs)
 6. Click **"Create distribution"**
-7. Wait for deployment (usually 10-15 minutes)
-8. Note the **Distribution ID** (needed for GitHub Actions)
+7. **IMPORTANT**: Copy the policy statement that appears in the yellow banner
+8. Wait for deployment (usually 10-15 minutes)
+9. Note the **Distribution ID** (needed for GitHub Actions)
 
-### 3.2 Configure Custom Error Pages (for SPA routing)
+### 3.3 Update S3 Bucket Policy for CloudFront Access
+
+After creating the distribution, AWS will show you a policy to add to your S3 bucket.
+
+1. Go back to **S3** service
+2. Select your bucket (`linktree.alexkm.com`)
+3. Go to **Permissions** tab
+4. Scroll to **Bucket policy**
+5. Click **"Edit"**
+6. Paste the policy provided by CloudFront (it will look like this):
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCloudFrontServicePrincipal",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::linktree.alexkm.com/*",
+            "Condition": {
+                "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::YOUR_ACCOUNT_ID:distribution/YOUR_DISTRIBUTION_ID"
+                }
+            }
+        }
+    ]
+}
+```
+
+7. Replace `YOUR_ACCOUNT_ID` and `YOUR_DISTRIBUTION_ID` with your actual values
+8. Click **"Save changes"**
+
+**Security Benefits:**
+- ✅ **S3 bucket remains completely private** - no public access at all
+- ✅ **Only CloudFront can access files** - protected by AWS service authentication
+- ✅ **Conditional access control** - restricted to your specific distribution
+- ✅ **No direct S3 URLs work** - all access must go through CloudFront
+- ✅ **Audit trail maintained** - all access is logged and traceable
+
+### 3.4 Configure Custom Error Pages (for SPA routing)
 
 1. Select your distribution
 2. Go to **Error pages** tab
@@ -223,25 +249,31 @@ This guide provides step-by-step instructions for deploying FlexiBio Builder to 
 
 ## Step 6: Configure GitHub Actions Secrets
 
-In your GitHub repository, add the following secrets:
+After completing the AWS setup, you'll need to configure GitHub Actions secrets for automated deployment.
 
-### 6.1 Navigate to Repository Secrets
+### 6.1 Required AWS Secrets
 
-1. Go to your GitHub repository
-2. Click **Settings** → **Secrets and variables** → **Actions**
-3. Click **"New repository secret"**
+From the setup above, you'll need these secrets:
 
-### 6.2 Add Required Secrets
+| Secret Name | Value Source | Description |
+|-------------|--------------|-------------|
+| `AWS_ACCESS_KEY_ID` | IAM user credentials (Step 2.2) | For AWS authentication |
+| `AWS_SECRET_ACCESS_KEY` | IAM user credentials (Step 2.2) | For AWS authentication |
+| `S3_BUCKET_NAME` | Your S3 bucket name | Target deployment bucket |
+| `CLOUDFRONT_DISTRIBUTION_ID` | CloudFront distribution (Step 3.1) | For cache invalidation |
+| `AWS_REGION` | Your chosen AWS region | Usually `us-east-1` |
 
-Add each of the following secrets:
+### 6.2 Complete GitHub Secrets Setup
 
-| Secret Name | Value | Description |
-|-------------|-------|-------------|
-| `AWS_ACCESS_KEY_ID` | Your IAM user access key ID | From Step 2.2 |
-| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret access key | From Step 2.2 |
-| `CLOUDFRONT_DISTRIBUTION_ID` | Your CloudFront distribution ID | From Step 3.1 |
-| `VITE_SUPABASE_URL` | Your Supabase project URL | From Supabase setup |
-| `VITE_SUPABASE_ANON_KEY` | Your Supabase anon key | From Supabase setup |
+For complete instructions on setting up ALL GitHub Actions secrets (including Supabase, analytics, and application configuration), see:
+
+**📚 [GitHub Secrets Configuration Guide](./GITHUB_SECRETS.md)**
+
+This guide covers:
+- All required and optional secrets
+- Step-by-step setup instructions
+- Security best practices
+- Troubleshooting common issues
 
 ## Step 7: Test Deployment
 
@@ -300,20 +332,25 @@ For faster uploads during deployment:
 ### 8.2 S3 Security Best Practices
 
 ✅ **Implemented:**
-- Bucket-level public access (not account-level)
-- Specific bucket policy for public read
+- **Private S3 bucket** with "Block all public access" enabled
+- **Origin Access Control (OAC)** - only CloudFront can access the bucket
+- **Conditional IAM policy** - restricts access to specific CloudFront distribution
+- **No direct S3 access** - bucket is completely private
 
 ✅ **Additional Recommendations:**
-- Enable S3 access logging
+- Enable S3 access logging for audit trails
 - Enable versioning for accidental deletion protection
 - Configure lifecycle policies for cost optimization
+- Set up S3 bucket notifications for security monitoring
 
 ### 8.3 CloudFront Security Best Practices
 
 ✅ **Implemented:**
-- HTTPS redirect enforced
-- Custom SSL certificate
-- Origin access control
+- **Origin Access Control (OAC)** - modern, secure access method
+- **HTTPS redirect enforced** - all traffic encrypted
+- **Custom SSL certificate** - secure domain validation
+- **Private origin** - S3 bucket not publicly accessible
+- **Security headers policy** - additional protection headers
 
 ✅ **Additional Recommendations:**
 - Configure AWS WAF for DDoS protection

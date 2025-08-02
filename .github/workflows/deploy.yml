@@ -1,5 +1,20 @@
 name: Deploy to S3
 
+# GitHub Secrets Required:
+# - VITE_SUPABASE_URL (required)
+# - VITE_SUPABASE_ANON_KEY (required) 
+# - VITE_APP_URL (required)
+# - AWS_ACCESS_KEY_ID (required)
+# - AWS_SECRET_ACCESS_KEY (required)
+# - S3_BUCKET_NAME (required)
+# - CLOUDFRONT_DISTRIBUTION_ID (required)
+# - VITE_GOOGLE_ANALYTICS_ID (optional)
+# - VITE_GOOGLE_TAG_MANAGER_ID (optional)
+# - VITE_FACEBOOK_PIXEL_ID (optional)
+# - AWS_REGION (optional, defaults to us-east-1)
+#
+# See docs/GITHUB_SECRETS.md for complete setup instructions
+
 on:
   push:
     branches: [ main ]
@@ -26,20 +41,26 @@ jobs:
     - name: Build application
       run: npm run build
       env:
+        # Required Environment Variables
         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        VITE_APP_URL: https://linktree.alexkm.com
+        VITE_APP_URL: ${{ secrets.VITE_APP_URL }}
+        
+        # Optional Analytics Environment Variables
+        VITE_GOOGLE_ANALYTICS_ID: ${{ secrets.VITE_GOOGLE_ANALYTICS_ID }}
+        VITE_GOOGLE_TAG_MANAGER_ID: ${{ secrets.VITE_GOOGLE_TAG_MANAGER_ID }}
+        VITE_FACEBOOK_PIXEL_ID: ${{ secrets.VITE_FACEBOOK_PIXEL_ID }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
 
     - name: Deploy to S3
       run: |
-        aws s3 sync dist/ s3://linktree.alexkm.com --delete --cache-control max-age=86400
+        aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }} --delete --cache-control max-age=86400
         
     - name: Invalidate CloudFront
       run: |
@@ -48,4 +69,4 @@ jobs:
     - name: Health check
       run: |
         sleep 30
-        curl -f https://linktree.alexkm.com || exit 1
+        curl -f ${{ secrets.VITE_APP_URL }} || exit 1
