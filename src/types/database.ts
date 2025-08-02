@@ -39,6 +39,7 @@ export interface ProfileSettings {
   custom_body_code: string | null;
   robots_directive: string;
   canonical_url: string | null;
+  hide_footer: boolean;
   created_at: string;
   updated_at: string;
 }

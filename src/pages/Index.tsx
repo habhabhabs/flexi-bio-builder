@@ -43,12 +43,14 @@ const Index = () => {
           <ProfileHeader profile={profile} />
           <LinksList />
           
-          {/* Powered by watermark */}
-          <div className="mt-8 text-center opacity-60">
-            <p className="text-xs text-muted-foreground">
-              Powered by FlexiBio Builder
-            </p>
-          </div>
+          {/* Powered by watermark - conditionally shown */}
+          {!profile?.hide_footer && (
+            <div className="mt-8 text-center opacity-60">
+              <p className="text-xs text-muted-foreground">
+                Powered by FlexiBio Builder
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>

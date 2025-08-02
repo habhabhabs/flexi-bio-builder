@@ -1,19 +1,19 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Link, ArrowLeft, BarChart3, Settings, Users, LinkIcon } from 'lucide-react';
+import { Link, ArrowLeft, BarChart3, Settings, Users, LinkIcon, LogOut } from 'lucide-react';
 import { LinkEditor } from '@/components/admin/LinkEditor';
 import { ProfileEditor } from '@/components/admin/ProfileEditor';
+import { AdminLogin } from '@/components/admin/AdminLogin';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Admin() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, isAuthenticated, loading, signOut } = useAuth();
   
-  // For demo purposes, simulate authentication
-  const handleLogin = () => {
-    setIsAuthenticated(true);
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   const { data: analytics } = useQuery({
@@ -29,27 +29,19 @@ export default function Admin() {
     enabled: isAuthenticated,
   });
 
-  if (!isAuthenticated) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-background">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle>Admin Access</CardTitle>
-            <CardDescription>
-              Enter your credentials to access the admin panel
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button onClick={handleLogin} className="w-full">
-              Demo Login (No Auth Required)
-            </Button>
-            <p className="text-xs text-muted-foreground text-center">
-              In production, this would require Supabase authentication
-            </p>
-          </CardContent>
-        </Card>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLogin />;
   }
 
   return (
@@ -65,6 +57,15 @@ export default function Admin() {
               </Button>
             </Link>
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">
+              Welcome, {user?.email}
+            </span>
+            <Button onClick={handleSignOut} variant="outline" size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
           </div>
         </div>
 

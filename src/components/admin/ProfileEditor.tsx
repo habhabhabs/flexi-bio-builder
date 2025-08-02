@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'react-hot-toast';
 
 export function ProfileEditor() {
@@ -60,6 +61,7 @@ export function ProfileEditor() {
       theme: formData.get('theme') as string,
       background_type: formData.get('background_type') as string,
       background_value: formData.get('background_value') as string,
+      hide_footer: formData.get('hide_footer') === 'on',
     };
     updateProfileMutation.mutate(updates);
   };
@@ -182,6 +184,17 @@ export function ProfileEditor() {
                   defaultValue={profile?.background_value || 'primary-gradient'}
                   placeholder="e.g., primary-gradient, #ff0000, or image URL"
                 />
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="hide_footer" 
+                  name="hide_footer"
+                  defaultChecked={profile?.hide_footer || false}
+                />
+                <Label htmlFor="hide_footer" className="text-sm font-normal">
+                  Hide "Powered by FlexiBio Builder" footer
+                </Label>
               </div>
               
               <Button type="submit" disabled={isLoading}>
