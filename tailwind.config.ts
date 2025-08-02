@@ -26,7 +26,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -61,7 +62,37 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				instagram: {
+					start: 'hsl(var(--instagram-start))',
+					middle: 'hsl(var(--instagram-middle))',
+					end: 'hsl(var(--instagram-end))'
+				},
+				email: {
+					primary: 'hsl(var(--email-primary))',
+					secondary: 'hsl(var(--email-secondary))'
+				},
+				'coming-soon': {
+					DEFAULT: 'hsl(var(--coming-soon))',
+					secondary: 'hsl(var(--coming-soon-secondary))'
 				}
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-instagram': 'var(--gradient-instagram)',
+				'gradient-email': 'var(--gradient-email)',
+				'gradient-coming-soon': 'var(--gradient-coming-soon)',
+				'gradient-background': 'var(--gradient-background)'
+			},
+			boxShadow: {
+				'elegant': 'var(--shadow-elegant)',
+				'glow': 'var(--shadow-glow)',
+				'instagram': 'var(--shadow-instagram)',
+				'email': 'var(--shadow-email)'
+			},
+			transitionTimingFunction: {
+				'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+				'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +115,16 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'shimmer': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'shimmer': 'shimmer 2s infinite'
 			}
 		}
 	},

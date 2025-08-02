@@ -1,13 +1,57 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { ProfileHeader } from '@/components/profile/ProfileHeader';
+import { LinksList } from '@/components/links/LinksList';
+import { AdminButton } from '@/components/admin/AdminButton';
+import { MetaTags } from '@/components/seo/MetaTags';
+import { useProfile } from '@/hooks/useProfile';
+import { useEffect } from 'react';
 
 const Index = () => {
+  const { data: profile } = useProfile();
+
+  // Apply background styling based on profile settings
+  useEffect(() => {
+    if (profile) {
+      const body = document.body;
+      
+      // Reset any existing background classes
+      body.className = body.className.replace(/bg-\w+-\w+/g, '');
+      
+      // Apply background based on profile settings
+      if (profile.background_type === 'gradient') {
+        if (profile.background_value === 'primary-gradient') {
+          body.style.background = 'var(--gradient-background)';
+          body.style.backgroundAttachment = 'fixed';
+        }
+      }
+    }
+  }, [profile]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <>
+      <MetaTags profile={profile} />
+      <AdminButton />
+      
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 relative">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-accent/5 rounded-full blur-xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-primary opacity-5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center space-y-8 w-full max-w-lg">
+          <ProfileHeader profile={profile} />
+          <LinksList />
+          
+          {/* Powered by watermark */}
+          <div className="mt-8 text-center opacity-60">
+            <p className="text-xs text-muted-foreground">
+              Powered by FlexiBio Builder
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

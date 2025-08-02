@@ -2,41 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Modern Linktree Design System - Professional & Beautiful */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Modern Color Palette */
+    --background: 0 0% 99%;
+    --foreground: 220 13% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 13% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 13% 9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand Colors - Modern Purple & Blue Gradient */
+    --primary: 255 84% 63%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 255 84% 73%;
+    
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 220 13% 9%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 249 95% 63%;
+    --accent-foreground: 0 0% 100%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 255 84% 63%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --radius: 1rem;
 
-    --radius: 0.5rem;
+    /* Instagram Brand Colors */
+    --instagram-start: 315 100% 60%;
+    --instagram-middle: 45 100% 60%;
+    --instagram-end: 340 82% 52%;
+
+    /* Email Brand Colors */
+    --email-primary: 217 91% 60%;
+    --email-secondary: 213 94% 68%;
+
+    /* Coming Soon Colors */
+    --coming-soon: 45 93% 58%;
+    --coming-soon-secondary: 48 100% 67%;
+
+    /* Beautiful Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-instagram: linear-gradient(135deg, hsl(var(--instagram-start)), hsl(var(--instagram-middle)), hsl(var(--instagram-end)));
+    --gradient-email: linear-gradient(135deg, hsl(var(--email-primary)), hsl(var(--email-secondary)));
+    --gradient-coming-soon: linear-gradient(135deg, hsl(var(--coming-soon)), hsl(var(--coming-soon-secondary)));
+    --gradient-background: linear-gradient(135deg, hsl(245 58% 51% / 0.05), hsl(255 84% 63% / 0.05));
+
+    /* Shadows & Effects */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
+    --shadow-instagram: 0 8px 25px -5px hsl(var(--instagram-start) / 0.3);
+    --shadow-email: 0 8px 25px -5px hsl(var(--email-primary) / 0.3);
+
+    /* Animation Variables */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
