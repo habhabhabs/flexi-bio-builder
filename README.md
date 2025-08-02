@@ -1,73 +1,136 @@
-# Welcome to your Lovable project
+# FlexiBio Builder - Enhanced Personal Linktree
 
-## Project info
+A comprehensive personal linktree application that surpasses linktr.ee functionality, built with React + Vite frontend and Supabase backend.
 
-**URL**: https://lovable.dev/projects/a446b3dd-bc37-4e49-beeb-236a1f674afc
+## 🚀 Features
 
-## How can I edit this code?
+### ✅ Current Features (MVP Complete)
+- **Dynamic Link Management** - Add, edit, delete, and reorder links
+- **Profile Customization** - Custom bio, profile image, themes, and backgrounds
+- **Click Analytics** - Track link clicks with detailed statistics
+- **SEO Optimization** - Complete meta tags, Open Graph, Twitter Cards
+- **Mobile Responsive** - Beautiful design on all devices
+- **Admin Panel** - Full-featured dashboard for content management
+- **Real-time Updates** - Live changes via Supabase real-time
+- **Theme System** - Multiple predefined themes and custom CSS support
 
-There are several ways of editing your application.
+### 📊 Analytics & SEO
+- Google Analytics integration
+- Google Tag Manager support
+- Facebook Pixel tracking
+- Custom meta tags and Open Graph
+- Twitter Card optimization
+- Canonical URLs and robots directives
 
-**Use Lovable**
+### 🎨 Customization
+- Multiple themes (Modern, Minimal, Colorful, Dark)
+- Background options (Solid, Gradient, Image)
+- Custom CSS injection
+- Custom head/body code injection
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a446b3dd-bc37-4e49-beeb-236a1f674afc) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React 18 + TypeScript + Vite
+- **Backend**: Supabase (PostgreSQL + Real-time + Auth)
+- **UI Framework**: Tailwind CSS + shadcn/ui
+- **State Management**: TanStack Query (React Query)
+- **Routing**: React Router DOM
+- **Deployment**: AWS S3 + CloudFront
+- **CI/CD**: GitHub Actions
 
-**Use your preferred IDE**
+## 📦 Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
+- Node.js 18+ and npm
+- Supabase account
+- AWS account (for deployment)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Quick Start
 
-Follow these steps:
+1. **Clone and Setup**
+```bash
+git clone <repository-url>
+cd flexi-bio-builder
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. **Configure Environment**
+```bash
+cp .env.example .env
+# Edit .env with your Supabase credentials
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. **Start Development**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Detailed Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+For complete setup instructions, see our detailed documentation:
 
-**Use GitHub Codespaces**
+- 📚 **[Supabase Setup Guide](./docs/SUPABASE_SETUP.md)** - Database configuration and schema setup
+- ☁️ **[AWS Setup Guide](./docs/AWS_SETUP.md)** - S3, CloudFront, and IAM configuration with least privilege policies
+- 🚀 **[Deployment Guide](./docs/DEPLOYMENT.md)** - Complete deployment process and troubleshooting
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🚀 Deployment
 
-## What technologies are used for this project?
+### Automated Deployment
+The application deploys automatically via GitHub Actions when you push to the `main` branch.
 
-This project is built with:
+### Prerequisites
+- Complete AWS S3 and CloudFront setup (see [AWS Setup Guide](./docs/AWS_SETUP.md))
+- Configure GitHub repository secrets
+- Set up custom domain with SSL
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Quick Deployment
+```bash
+git push origin main
+# Automatic deployment triggered
+# Monitor progress in GitHub Actions tab
+```
 
-## How can I deploy this project?
+For detailed deployment instructions, troubleshooting, and advanced configurations, see the **[Deployment Guide](./docs/DEPLOYMENT.md)**.
 
-Simply open [Lovable](https://lovable.dev/projects/a446b3dd-bc37-4e49-beeb-236a1f674afc) and click on Share -> Publish.
+## 📁 Project Structure
 
-## Can I connect a custom domain to my Lovable project?
+```
+src/
+├── components/
+│   ├── admin/          # Admin panel components
+│   ├── links/          # Link display components
+│   ├── profile/        # Profile components
+│   ├── seo/           # SEO components
+│   └── ui/            # shadcn/ui components
+├── hooks/             # Custom React hooks
+├── integrations/      # Supabase integration
+├── pages/             # Page components
+├── types/             # TypeScript definitions
+└── utils/             # Utility functions
+```
 
-Yes, you can!
+## 🎯 Usage
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Public Interface
+Visit the root URL to see your live linktree with responsive design and automatic click tracking.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Admin Panel
+Access `/admin` for:
+- **Links Management**: Add, edit, delete, and reorder links
+- **Profile Settings**: Update bio, themes, SEO configuration
+- **Analytics Dashboard**: View click statistics and performance
+
+### SEO Features
+- Custom meta titles and descriptions
+- Open Graph and Twitter Card tags
+- Canonical URLs and robots directives
+- Custom head/body code injection
+
+## 🔧 Development Commands
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+**Deployed at**: [https://linktree.alexkm.com](https://linktree.alexkm.com)

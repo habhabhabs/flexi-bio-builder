@@ -3,7 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link, ArrowLeft, BarChart3, Settings, Users } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Link, ArrowLeft, BarChart3, Settings, Users, LinkIcon } from 'lucide-react';
+import { LinkEditor } from '@/components/admin/LinkEditor';
+import { ProfileEditor } from '@/components/admin/ProfileEditor';
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -113,58 +116,66 @@ export default function Admin() {
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Links Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Link Performance</CardTitle>
-              <CardDescription>
-                Click statistics for each of your links
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {analytics?.map((link, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <div>
-                      <p className="font-medium">{link.title}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {link.click_count} clicks
-                      </p>
+        <Tabs defaultValue="links" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="links">
+              <LinkIcon className="w-4 h-4 mr-2" />
+              Links
+            </TabsTrigger>
+            <TabsTrigger value="profile">
+              <Settings className="w-4 h-4 mr-2" />
+              Profile
+            </TabsTrigger>
+            <TabsTrigger value="analytics">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="links" className="mt-6">
+            <LinkEditor />
+          </TabsContent>
+          
+          <TabsContent value="profile" className="mt-6">
+            <ProfileEditor />
+          </TabsContent>
+          
+          <TabsContent value="analytics" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Link Performance</CardTitle>
+                <CardDescription>
+                  Click statistics and analytics for your links
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {analytics?.map((link, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <p className="font-medium">{link.title}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {link.click_count} total clicks
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold">{link.click_count}</p>
+                        <p className="text-xs text-muted-foreground">clicks</p>
+                      </div>
                     </div>
-                    <Button variant="ghost" size="sm">
-                      <Settings className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
-                Manage your profile and links
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button className="w-full justify-start" variant="ghost">
-                <Settings className="w-4 h-4 mr-2" />
-                Edit Profile Settings
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                <Link className="w-4 h-4 mr-2" />
-                Manage Links
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                View Analytics
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+                  ))}
+                  
+                  {!analytics?.length && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                      <p>No analytics data yet. Add some links to start tracking clicks!</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {/* Footer */}
         <div className="mt-8 text-center text-muted-foreground">
