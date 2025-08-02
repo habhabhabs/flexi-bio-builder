@@ -79,27 +79,37 @@ export function useAdminAuth() {
   const signInWithEmail = async (email: string, password: string) => {
     setLoading(true);
     
-    // Check if email is in admin_users first (same validation as magic link)
-    const { data: adminCheck, error: adminError } = await supabase
-      .from('admin_users')
-      .select('email')
-      .eq('email', email)
-      .eq('is_active', true)
-      .single();
-
-    if (adminError || !adminCheck) {
-      setLoading(false);
-      return { 
-        data: null, 
-        error: { message: 'Email not authorized for admin access' } 
-      };
-    }
-    
-    // Proceed with normal password authentication
+    // First authenticate with Supabase auth
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    if (error) {
+      setLoading(false);
+      return { data, error };
+    }
+    
+    // Then check if the authenticated user has admin access
+    if (data.user) {
+      const { data: adminCheck, error: adminError } = await supabase
+        .from('admin_users')
+        .select('email')
+        .eq('user_id', data.user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (adminError || !adminCheck) {
+        // Sign out the user since they don't have admin access
+        await supabase.auth.signOut();
+        setLoading(false);
+        return { 
+          data: null, 
+          error: { message: 'User not authorized for admin access' } 
+        };
+      }
+    }
+    
     setLoading(false);
     return { data, error };
   };
@@ -107,20 +117,23 @@ export function useAdminAuth() {
   const signInWithMagicLink = async (email: string) => {
     setLoading(true);
     
-    // Check if email is in admin_users first
-    const { data: adminCheck, error: adminError } = await supabase
-      .from('admin_users')
-      .select('email')
-      .eq('email', email)
-      .eq('is_active', true)
-      .single();
-
-    if (adminError || !adminCheck) {
-      setLoading(false);
-      return { 
-        data: null, 
-        error: { message: 'Email not authorized for admin access' } 
-      };
+    // First check if the email belongs to an existing auth user who has admin access
+    // We need to check this without requiring authentication since we're about to send a magic link
+    try {
+      // Get the auth user by email first (this will be checked again after authentication)
+      const { data: authUsers } = await supabase.rpc('get_available_auth_users');
+      const authUser = authUsers?.find(user => user.email === email && user.is_admin);
+      
+      if (!authUser) {
+        setLoading(false);
+        return { 
+          data: null, 
+          error: { message: 'Email not authorized for admin access' } 
+        };
+      }
+    } catch (error) {
+      // If we can't check, proceed anyway - the auth flow will handle the validation
+      console.warn('Could not pre-validate admin access, proceeding with magic link');
     }
     
     // Get redirect URL - prioritize environment variable, fallback to current location
