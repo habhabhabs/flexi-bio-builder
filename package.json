@@ -7,10 +7,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:local": "vite --mode local",
+    "dev:remote": "vite --mode development",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "supabase:start": "npx supabase start",
+    "supabase:stop": "npx supabase stop",
+    "supabase:reset": "npx supabase db reset",
+    "supabase:studio": "npx supabase studio",
     "security:check": "grep -r \"supabase\\.co\\|eyJhbGciOiJIUzI1NiI\\|AKIA[0-9A-Z]\" src/ --exclude-dir=node_modules || echo \"✅ No hardcoded credentials found in source code\"",
     "security:full": "node scripts/security-check.js"
   },
