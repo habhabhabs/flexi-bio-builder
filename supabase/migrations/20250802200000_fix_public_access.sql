@@ -6,6 +6,12 @@ DROP POLICY IF EXISTS "Admin users can manage links" ON public.links;
 DROP POLICY IF EXISTS "Admin users can manage profile" ON public.profile_settings;
 DROP POLICY IF EXISTS "Links are publicly readable" ON public.links;
 DROP POLICY IF EXISTS "Profile settings are publicly readable" ON public.profile_settings;
+DROP POLICY IF EXISTS "Admin users can insert links" ON public.links;
+DROP POLICY IF EXISTS "Admin users can update links" ON public.links;
+DROP POLICY IF EXISTS "Admin users can delete links" ON public.links;
+DROP POLICY IF EXISTS "Admin users can insert profile settings" ON public.profile_settings;
+DROP POLICY IF EXISTS "Admin users can update profile settings" ON public.profile_settings;
+DROP POLICY IF EXISTS "Admin users can delete profile settings" ON public.profile_settings;
 
 -- Restore public read access for the main website
 CREATE POLICY "Links are publicly readable" 
