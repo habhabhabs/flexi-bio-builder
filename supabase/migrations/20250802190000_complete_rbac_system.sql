@@ -63,6 +63,9 @@ WITH CHECK (
 DROP POLICY IF EXISTS "Authenticated users can manage links" ON public.links;
 DROP POLICY IF EXISTS "Authenticated users can manage profile" ON public.profile_settings;
 DROP POLICY IF EXISTS "Authenticated users can view analytics" ON public.link_analytics;
+DROP POLICY IF EXISTS "Admin users can manage links" ON public.links;
+DROP POLICY IF EXISTS "Admin users can manage profile" ON public.profile_settings;
+DROP POLICY IF EXISTS "Admin users can view analytics" ON public.link_analytics;
 
 -- New policies based on admin_users
 CREATE POLICY "Admin users can manage links" 
@@ -172,6 +175,9 @@ GRANT SELECT ON public.admin_dashboard_stats TO authenticated;
 
 -- Insert initial super admin (replace with your actual admin email)
 -- This should be done manually in production with the actual admin email
+-- Disable trigger temporarily to allow ON CONFLICT to work
+ALTER TABLE public.admin_users DISABLE TRIGGER validate_admin_user_before_insert;
+
 INSERT INTO public.admin_users (user_id, email, role, is_active, created_at) 
 SELECT 
   au.id, 
@@ -181,7 +187,10 @@ SELECT
   NOW()
 FROM auth.users au 
 WHERE au.email = 'admin@alexkm.com'  -- Replace with actual admin email
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (user_id) DO NOTHING;
+
+-- Re-enable trigger
+ALTER TABLE public.admin_users ENABLE TRIGGER validate_admin_user_before_insert;
 
 -- Update the comment on admin_users table
 COMMENT ON TABLE public.admin_users IS 'Admin users table - users must exist in auth.users before being granted admin access';

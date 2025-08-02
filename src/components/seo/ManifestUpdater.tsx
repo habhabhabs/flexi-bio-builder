@@ -11,11 +11,13 @@ export function ManifestUpdater({ profile }: ManifestUpdaterProps) {
 
     // Only update manifest if hiding FlexiBio references
     if (profile.hide_footer) {
+      const baseUrl = window.location.origin;
+      
       const manifestData = {
         name: `${profile.display_name} - Personal Links` || 'Personal Links',
         short_name: profile.display_name || 'Personal Links',
         description: profile.bio || 'Personal links and contact information',
-        start_url: '/',
+        start_url: `${baseUrl}/`,
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#6366f1',
@@ -23,19 +25,19 @@ export function ManifestUpdater({ profile }: ManifestUpdaterProps) {
         categories: ['productivity', 'social', 'utilities'],
         icons: [
           {
-            src: '/favicon.svg',
+            src: `${baseUrl}/favicon.svg`,
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any maskable'
           },
           {
-            src: '/apple-touch-icon.svg',
+            src: `${baseUrl}/apple-touch-icon.svg`,
             sizes: '180x180', 
             type: 'image/svg+xml',
             purpose: 'any'
           },
           {
-            src: '/favicon.ico',
+            src: `${baseUrl}/favicon.ico`,
             sizes: '16x16 32x32 48x48',
             type: 'image/x-icon'
           }
