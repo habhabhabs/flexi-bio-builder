@@ -87,7 +87,8 @@ For complete setup instructions, see our detailed documentation:
 - ☁️ **[AWS Setup Guide](./docs/AWS_SETUP.md)** - S3, CloudFront, and IAM configuration with least privilege policies
 - 🔐 **[GitHub Secrets Guide](./docs/GITHUB_SECRETS.md)** - Complete GitHub Actions secrets configuration
 - 🚀 **[Deployment Guide](./docs/DEPLOYMENT.md)** - Complete deployment process and troubleshooting
-- 📋 **[Migration Guide](./run_migrations.md)** - Database migration execution order and instructions
+- 📋 **[Migration Guide](./sql/run_migrations.md)** - Database migration execution order and instructions
+- 🛠️ **[SQL Scripts Guide](./sql/README.md)** - Troubleshooting and maintenance SQL scripts
 
 ## 🚀 Deployment
 
@@ -111,18 +112,23 @@ For detailed deployment instructions, troubleshooting, and advanced configuratio
 ## 📁 Project Structure
 
 ```
-src/
-├── components/
-│   ├── admin/          # Admin panel components
-│   ├── links/          # Link display components
-│   ├── profile/        # Profile components
-│   ├── seo/           # SEO components
-│   └── ui/            # shadcn/ui components
-├── hooks/             # Custom React hooks
-├── integrations/      # Supabase integration
-├── pages/             # Page components
-├── types/             # TypeScript definitions
-└── utils/             # Utility functions
+flexi-bio-builder/
+├── src/
+│   ├── components/
+│   │   ├── admin/          # Admin panel components
+│   │   ├── links/          # Link display components
+│   │   ├── profile/        # Profile components
+│   │   ├── seo/           # SEO components
+│   │   └── ui/            # shadcn/ui components
+│   ├── hooks/             # Custom React hooks
+│   ├── integrations/      # Supabase integration
+│   ├── pages/             # Page components
+│   ├── types/             # TypeScript definitions
+│   └── utils/             # Utility functions
+├── docs/                  # Documentation guides
+├── sql/                   # Database scripts and troubleshooting
+├── supabase/             # Supabase migrations and config
+└── scripts/              # Build and deployment scripts
 ```
 
 ## 🎯 Usage
@@ -173,6 +179,48 @@ Based on your role, access different features:
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+#### 🚨 **500 Errors on Public Site**
+If your public site returns 500 errors:
+```bash
+# 1. Run diagnostic script in Supabase SQL Editor
+# Execute: sql/debug_policies.sql
+
+# 2. Apply emergency fix if needed
+# Execute: sql/fix_500_errors.sql
+```
+
+#### 🔐 **Admin Login Issues**
+If admin panel login fails or queries error:
+```bash
+# 1. Check for infinite recursion in policies
+# Execute: sql/fix_infinite_recursion.sql
+
+# 2. Fix foreign key constraint issues
+# Execute: sql/fix_foreign_key_simple.sql
+```
+
+#### 👤 **Can't Create Admin Users**
+If admin user creation fails:
+```bash
+# 1. Update email in script
+# Edit: sql/add_admin_user.sql (change email address)
+
+# 2. Fix foreign key constraints first
+# Execute: sql/fix_foreign_key_constraint.sql
+
+# 3. Add the admin user
+# Execute: sql/add_admin_user.sql
+```
+
+### Getting Help
+- 📖 **[SQL Scripts Guide](./sql/README.md)** - Detailed troubleshooting scripts
+- 📋 **[Migration Guide](./sql/run_migrations.md)** - Database setup instructions
+- 🔍 **[Troubleshooting Docs](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ## 🔒 Security Features
 
