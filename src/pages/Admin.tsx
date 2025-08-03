@@ -3,11 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Link, ArrowLeft, BarChart3, Settings, Users, LinkIcon, LogOut } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Link, ArrowLeft, BarChart3, Settings, Users, LinkIcon, LogOut, Key } from 'lucide-react';
 import { LinkEditor } from '@/components/admin/LinkEditor';
 import { ProfileEditor } from '@/components/admin/ProfileEditor';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { AdminUserManagement } from '@/components/admin/AdminUserManagement';
+import { ChangePassword } from '@/components/admin/ChangePassword';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 export default function Admin() {
@@ -126,7 +128,7 @@ export default function Admin() {
 
         {/* Main Content */}
         <Tabs defaultValue="links" className="w-full">
-          <TabsList className={`grid w-full ${adminUser && ['super_admin', 'admin'].includes(adminUser.role) ? 'grid-cols-4' : 'grid-cols-3'}`}>
+          <TabsList className={`grid w-full ${adminUser && ['super_admin', 'admin'].includes(adminUser.role) ? 'grid-cols-5' : 'grid-cols-4'}`}>
             <TabsTrigger value="links">
               <LinkIcon className="w-4 h-4 mr-2" />
               Links
@@ -138,6 +140,10 @@ export default function Admin() {
             <TabsTrigger value="analytics">
               <BarChart3 className="w-4 h-4 mr-2" />
               Analytics
+            </TabsTrigger>
+            <TabsTrigger value="account">
+              <Key className="w-4 h-4 mr-2" />
+              Account
             </TabsTrigger>
             {adminUser && ['super_admin', 'admin'].includes(adminUser.role) && (
               <TabsTrigger value="users">
@@ -189,6 +195,50 @@ export default function Admin() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+          
+          <TabsContent value="account" className="mt-6">
+            <div className="grid gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Information</CardTitle>
+                  <CardDescription>
+                    Your account details and security settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium">Email Address</Label>
+                      <p className="text-sm text-muted-foreground mt-1">{user?.email}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Admin Role</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {adminUser?.role.replace('_', ' ') || 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Account Status</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {adminUser?.is_active ? 'Active' : 'Inactive'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Last Login</Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {adminUser?.last_login 
+                          ? new Date(adminUser.last_login).toLocaleString()
+                          : 'Never'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <ChangePassword />
+            </div>
           </TabsContent>
           
           {adminUser && ['super_admin', 'admin'].includes(adminUser.role) && (

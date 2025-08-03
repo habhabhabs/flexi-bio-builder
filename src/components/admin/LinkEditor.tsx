@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from '@/types/database';
@@ -16,6 +16,8 @@ import { toast } from 'react-hot-toast';
 export function LinkEditor() {
   const [editingLink, setEditingLink] = useState<Link | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<Link | null>(null);
+  const [draggedOver, setDraggedOver] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: links, isLoading } = useQuery({
@@ -101,6 +103,33 @@ export function LinkEditor() {
     },
   });
 
+  const reorderLinksMutation = useMutation({
+    mutationFn: async (reorderedLinks: Link[]) => {
+      // Update positions for all links
+      const updates = reorderedLinks.map((link, index) => ({
+        id: link.id,
+        position: index + 1,
+      }));
+
+      for (const update of updates) {
+        const { error } = await supabase
+          .from('links')
+          .update({ position: update.position })
+          .eq('id', update.id);
+        
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-links'] });
+      queryClient.invalidateQueries({ queryKey: ['links'] });
+      toast.success('Links reordered successfully!');
+    },
+    onError: (error) => {
+      toast.error('Failed to reorder links: ' + error.message);
+    },
+  });
+
   const handleSave = (formData: FormData) => {
     const linkData = {
       title: formData.get('title') as string,
@@ -120,6 +149,48 @@ export function LinkEditor() {
   const openEditDialog = (link?: Link) => {
     setEditingLink(link || null);
     setIsDialogOpen(true);
+  };
+
+  const handleDragStart = (e: React.DragEvent, link: Link) => {
+    setDraggedItem(link);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, linkId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDraggedOver(linkId);
+  };
+
+  const handleDragLeave = () => {
+    setDraggedOver(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetLink: Link) => {
+    e.preventDefault();
+    setDraggedOver(null);
+
+    if (!draggedItem || draggedItem.id === targetLink.id) {
+      setDraggedItem(null);
+      return;
+    }
+
+    if (!links) return;
+
+    const draggedIndex = links.findIndex(link => link.id === draggedItem.id);
+    const targetIndex = links.findIndex(link => link.id === targetLink.id);
+
+    const reorderedLinks = [...links];
+    const [removed] = reorderedLinks.splice(draggedIndex, 1);
+    reorderedLinks.splice(targetIndex, 0, removed);
+
+    reorderLinksMutation.mutate(reorderedLinks);
+    setDraggedItem(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDraggedOver(null);
   };
 
   if (isLoading) {
@@ -143,7 +214,7 @@ export function LinkEditor() {
           <div>
             <CardTitle>Manage Links</CardTitle>
             <CardDescription>
-              Add, edit, and reorder your links
+              Add, edit, and reorder your links by dragging and dropping
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -245,9 +316,17 @@ export function LinkEditor() {
           {links?.map((link) => (
             <div
               key={link.id}
-              className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+              draggable
+              onDragStart={(e) => handleDragStart(e, link)}
+              onDragOver={(e) => handleDragOver(e, link.id)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, link)}
+              onDragEnd={handleDragEnd}
+              className={`flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-move ${
+                draggedOver === link.id ? 'border-primary bg-primary/5' : ''
+              } ${draggedItem?.id === link.id ? 'opacity-50' : ''}`}
             >
-              <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
+              <GripVertical className="w-4 h-4 text-muted-foreground" />
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -270,14 +349,18 @@ export function LinkEditor() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => openEditDialog(link)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEditDialog(link);
+                  }}
                 >
                   <Edit className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     if (confirm('Are you sure you want to delete this link?')) {
                       deleteLinkMutation.mutate(link.id);
                     }

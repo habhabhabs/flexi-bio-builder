@@ -62,7 +62,7 @@ export function AdminUserManagement() {
       setSelectedUserEmail('');
       setNewUserRole('admin');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Failed to create admin user: ' + error.message);
     },
   });
@@ -83,7 +83,7 @@ export function AdminUserManagement() {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success(`Admin user ${variables.is_active ? 'activated' : 'deactivated'} successfully!`);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Failed to update admin user: ' + error.message);
     },
   });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfileSettings } from '@/types/database';
@@ -11,12 +11,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { toast } from 'react-hot-toast';
 
 export function ProfileEditor() {
   const { data: profile } = useProfile();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState(profile?.profile_image || '');
+
+  useEffect(() => {
+    if (profile?.profile_image !== undefined) {
+      setProfileImage(profile.profile_image || '');
+    }
+  }, [profile?.profile_image]);
 
   const updateProfileMutation = useMutation({
     mutationFn: async (updates: Partial<ProfileSettings>) => {
@@ -57,7 +65,7 @@ export function ProfileEditor() {
     const updates = {
       display_name: formData.get('display_name') as string,
       bio: formData.get('bio') as string,
-      profile_image: formData.get('profile_image') as string || null,
+      profile_image: profileImage || null,
       theme: formData.get('theme') as string,
       background_type: formData.get('background_type') as string,
       background_value: formData.get('background_value') as string,
@@ -136,16 +144,11 @@ export function ProfileEditor() {
                 />
               </div>
               
-              <div className="grid gap-2">
-                <Label htmlFor="profile_image">Profile Image URL</Label>
-                <Input
-                  id="profile_image"
-                  name="profile_image"
-                  type="url"
-                  defaultValue={profile?.profile_image || ''}
-                  placeholder="https://example.com/your-photo.jpg"
-                />
-              </div>
+              <ImageUpload
+                currentImage={profile?.profile_image}
+                onImageChange={setProfileImage}
+                label="Profile Image"
+              />
               
               <div className="grid gap-2">
                 <Label htmlFor="theme">Theme</Label>
@@ -178,12 +181,19 @@ export function ProfileEditor() {
               
               <div className="grid gap-2">
                 <Label htmlFor="background_value">Background Value</Label>
-                <Input
-                  id="background_value"
-                  name="background_value"
-                  defaultValue={profile?.background_value || 'primary-gradient'}
-                  placeholder="e.g., primary-gradient, #ff0000, or image URL"
-                />
+                <div className="space-y-2">
+                  <Input
+                    id="background_value"
+                    name="background_value"
+                    defaultValue={profile?.background_value || 'primary-gradient'}
+                    placeholder="e.g., primary-gradient, #ff0000, or image URL"
+                  />
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p><strong>Gradient presets:</strong> primary-gradient, secondary-gradient, accent-gradient</p>
+                    <p><strong>Solid colors:</strong> #ff0000, rgb(255,0,0), or CSS color names</p>
+                    <p><strong>Images:</strong> Full URL to background image</p>
+                  </div>
+                </div>
               </div>
               
               <div className="flex items-center space-x-2">
