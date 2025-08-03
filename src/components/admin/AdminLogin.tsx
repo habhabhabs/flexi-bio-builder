@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Key, Shield } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'react-hot-toast';
 
 export function AdminLogin() {
@@ -15,6 +16,7 @@ export function AdminLogin() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetLoading, setIsResetLoading] = useState(false);
 
   const handleEmailPasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +61,41 @@ export function AdminLogin() {
     }
     
     setIsLoading(false);
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      toast.error('Please enter your email address first');
+      return;
+    }
+
+    setIsResetLoading(true);
+    setMessage('');
+
+    try {
+      // Get redirect URL for password reset
+      const envUrl = import.meta.env.VITE_APP_URL;
+      const currentOrigin = window.location.origin;
+      const baseUrl = envUrl || currentOrigin;
+      const redirectUrl = `${baseUrl}/reset-password`;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setMessage('Password reset email sent! Check your inbox for instructions.');
+      toast.success('Password reset email sent to your inbox!');
+    } catch (error: any) {
+      const errorMessage = error.message || 'Failed to send password reset email';
+      setMessage(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsResetLoading(false);
+    }
   };
 
   return (
@@ -177,6 +214,26 @@ export function AdminLogin() {
                     </>
                   )}
                 </Button>
+                
+                <div className="text-center">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handlePasswordReset}
+                    disabled={isResetLoading || loading}
+                    className="text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    {isResetLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                        Sending Reset Email...
+                      </>
+                    ) : (
+                      'Forgot your password?'
+                    )}
+                  </Button>
+                </div>
               </form>
             </TabsContent>
           </Tabs>

@@ -4,10 +4,42 @@ import { AdminButton } from '@/components/admin/AdminButton';
 import { MetaTags } from '@/components/seo/MetaTags';
 import { ManifestUpdater } from '@/components/seo/ManifestUpdater';
 import { useProfile } from '@/hooks/useProfile';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Index = () => {
   const { data: profile } = useProfile();
+  const { isAuthenticated, adminUser, loading } = useAdminAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Check for magic link authentication and redirect to admin
+  useEffect(() => {
+    // Check if user came from magic link or password reset (Supabase adds these params)
+    const accessToken = searchParams.get('access_token');
+    const refreshToken = searchParams.get('refresh_token');
+    const type = searchParams.get('type');
+    
+    if (accessToken && refreshToken) {
+      if (type === 'magiclink') {
+        console.log('Magic link detected, checking authentication...');
+        
+        // Small delay to allow auth state to update
+        const checkAuthAndRedirect = setTimeout(() => {
+          if (isAuthenticated && adminUser) {
+            console.log('Authenticated admin user detected, redirecting to admin...');
+            navigate('/admin', { replace: true });
+          }
+        }, 1000);
+        
+        return () => clearTimeout(checkAuthAndRedirect);
+      } else if (type === 'recovery') {
+        console.log('Password reset link detected, redirecting to reset password page...');
+        navigate('/reset-password', { replace: true });
+      }
+    }
+  }, [searchParams, isAuthenticated, adminUser, navigate]);
 
   // Apply background styling based on profile settings
   useEffect(() => {

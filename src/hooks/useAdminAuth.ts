@@ -140,17 +140,8 @@ export function useAdminAuth() {
     const envUrl = import.meta.env.VITE_APP_URL;
     const currentOrigin = window.location.origin;
     
-    // For production, always use environment variable if set
-    // For development, use localhost:3000 if current origin is different
-    let baseUrl;
-    if (envUrl && envUrl !== 'http://localhost:8080') {
-      baseUrl = envUrl;
-    } else if (currentOrigin.includes('localhost')) {
-      baseUrl = 'http://localhost:3000';
-    } else {
-      baseUrl = currentOrigin;
-    }
-    
+    // Use environment variable if set, otherwise use current origin
+    const baseUrl = envUrl || currentOrigin;
     const redirectUrl = `${baseUrl}/admin`;
     
     console.log('Magic link redirect URL:', redirectUrl); // Debug log
