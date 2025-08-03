@@ -11,9 +11,28 @@ import { AdminLogin } from '@/components/admin/AdminLogin';
 import { AdminUserManagement } from '@/components/admin/AdminUserManagement';
 import { ChangePassword } from '@/components/admin/ChangePassword';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { useEffect } from 'react';
 
 export default function Admin() {
   const { user, adminUser, isAuthenticated, loading, signOut } = useAdminAuth();
+  const { data: profile } = useProfile();
+  
+  // Apply theme based on profile settings
+  useEffect(() => {
+    if (profile) {
+      const html = document.documentElement;
+      
+      // Reset any existing theme classes
+      html.className = html.className.replace(/\b(modern|minimal|colorful|dark)\b/g, '');
+      
+      // Apply theme class to html element
+      const theme = profile.theme || 'modern';
+      if (theme !== 'modern') {
+        html.classList.add(theme);
+      }
+    }
+  }, [profile]);
   
   const handleSignOut = async () => {
     await signOut();

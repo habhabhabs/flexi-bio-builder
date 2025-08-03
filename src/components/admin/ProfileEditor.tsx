@@ -192,6 +192,7 @@ export function ProfileEditor() {
                     <p><strong>Gradient presets:</strong> primary-gradient, secondary-gradient, accent-gradient</p>
                     <p><strong>Solid colors:</strong> #ff0000, rgb(255,0,0), or CSS color names</p>
                     <p><strong>Images:</strong> Full URL to background image</p>
+                    <p><strong>Note:</strong> Backgrounds adapt to your selected theme automatically</p>
                   </div>
                 </div>
               </div>

@@ -6,12 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
+import { useProfile } from '@/hooks/useProfile';
 import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { data: profile } = useProfile();
   const [isLoading, setIsLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -20,6 +22,22 @@ export default function ResetPassword() {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  // Apply theme based on profile settings
+  useEffect(() => {
+    if (profile) {
+      const html = document.documentElement;
+      
+      // Reset any existing theme classes
+      html.className = html.className.replace(/\b(modern|minimal|colorful|dark)\b/g, '');
+      
+      // Apply theme class to html element
+      const theme = profile.theme || 'modern';
+      if (theme !== 'modern') {
+        html.classList.add(theme);
+      }
+    }
+  }, [profile]);
 
   // Check if this is a valid password reset link
   useEffect(() => {

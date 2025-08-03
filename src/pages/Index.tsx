@@ -41,20 +41,47 @@ const Index = () => {
     }
   }, [searchParams, isAuthenticated, adminUser, navigate]);
 
-  // Apply background styling based on profile settings
+  // Apply theme and background styling based on profile settings
   useEffect(() => {
     if (profile) {
       const body = document.body;
+      const html = document.documentElement;
       
-      // Reset any existing background classes
-      body.className = body.className.replace(/bg-\w+-\w+/g, '');
+      // Reset any existing theme classes
+      html.className = html.className.replace(/\b(modern|minimal|colorful|dark)\b/g, '');
+      
+      // Apply theme class to html element
+      const theme = profile.theme || 'modern';
+      if (theme !== 'modern') {
+        html.classList.add(theme);
+      }
+      
+      // Reset any existing background styles
+      body.style.background = '';
+      body.style.backgroundAttachment = '';
       
       // Apply background based on profile settings
       if (profile.background_type === 'gradient') {
         if (profile.background_value === 'primary-gradient') {
           body.style.background = 'var(--gradient-background)';
           body.style.backgroundAttachment = 'fixed';
+        } else if (profile.background_value === 'secondary-gradient') {
+          body.style.background = 'linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--muted)))';
+          body.style.backgroundAttachment = 'fixed';
+        } else if (profile.background_value === 'accent-gradient') {
+          body.style.background = 'linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)))';
+          body.style.backgroundAttachment = 'fixed';
         }
+      } else if (profile.background_type === 'solid') {
+        body.style.background = profile.background_value || 'hsl(var(--background))';
+        body.style.backgroundAttachment = 'fixed';
+      } else if (profile.background_type === 'image' && profile.background_value) {
+        body.style.background = `url('${profile.background_value}') center/cover no-repeat`;
+        body.style.backgroundAttachment = 'fixed';
+      } else {
+        // Default to theme's gradient background
+        body.style.background = 'var(--gradient-background)';
+        body.style.backgroundAttachment = 'fixed';
       }
     }
   }, [profile]);
