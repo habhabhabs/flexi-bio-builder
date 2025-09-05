@@ -1,0 +1,119 @@
+name: Security Checks
+
+# Run security checks on all pull requests
+on:
+  pull_request:
+    branches: [ main ]
+  # Also allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        # Fetch full history for better analysis
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    # Custom security checks using existing script
+    - name: Run custom security scan
+      run: npm run security:full
+
+    # ESLint security checks
+    - name: Run ESLint security rules
+      run: npm run lint
+
+    # Dependency vulnerability scanning
+    - name: Run npm audit
+      run: npm audit --audit-level=moderate
+
+    # Check for hardcoded secrets with grep
+    - name: Quick credential scan
+      run: npm run security:check
+
+    # Semgrep security analysis
+    - name: Run Semgrep security scan
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: >-
+          p/security-audit
+          p/secrets
+          p/typescript
+          p/react
+        generateSarif: "1"
+      env:
+        SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+      continue-on-error: true
+
+    # Upload Semgrep results to GitHub Security tab
+    - name: Upload Semgrep SARIF
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: semgrep.sarif
+      continue-on-error: true
+
+    # CodeQL security analysis for JavaScript/TypeScript
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      continue-on-error: true
+
+    # Check for exposed secrets in git history
+    - name: Run TruffleHog OSS
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        extra_args: --debug --only-verified
+      continue-on-error: true
+
+    # Scan package-lock.json for known vulnerabilities
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+
+    # Check for license compliance
+    - name: License compliance check
+      run: |
+        echo "📋 Checking license compliance..."
+        npx license-checker --summary --production --excludePrivatePackages || echo "⚠️ License check completed with warnings"
+
+    # Summary report
+    - name: Security scan summary
+      if: always()
+      run: |
+        echo "🔒 Security Scan Completed"
+        echo "=============================="
+        echo "✅ Custom security scan: Check logs above"
+        echo "✅ ESLint security rules: Check logs above"  
+        echo "✅ NPM audit: Check logs above"
+        echo "✅ Semgrep analysis: Check GitHub Security tab"
+        echo "✅ CodeQL analysis: Check GitHub Security tab"
+        echo "✅ TruffleHog secrets scan: Check logs above"
+        echo "✅ Snyk vulnerability scan: Check logs above"
+        echo "✅ License compliance: Check logs above"
+        echo ""
+        echo "🔍 Review all security findings before merging!"

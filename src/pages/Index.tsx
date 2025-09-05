@@ -108,7 +108,15 @@ const Index = () => {
           {!profile?.hide_footer && (
             <div className="mt-8 text-center opacity-60">
               <p className="text-xs text-muted-foreground">
-                Powered by FlexiBio Builder
+                Powered by{' '}
+                <a 
+                  href="https://github.com/habhabhabs/flexi-bio-builder" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors duration-200 underline decoration-1 underline-offset-2"
+                >
+                  FlexiBio Builder
+                </a>
               </p>
             </div>
           )}

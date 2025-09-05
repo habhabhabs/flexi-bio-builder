@@ -270,7 +270,15 @@ export default function Admin() {
         {/* Footer */}
         <div className="mt-8 text-center text-muted-foreground">
           <p className="text-sm">
-            Admin Panel - Built with Supabase & React
+            Admin Panel - Built with Supabase & React |{' '}
+            <a 
+              href="https://github.com/habhabhabs/flexi-bio-builder" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors duration-200 underline decoration-1 underline-offset-2"
+            >
+              View Source
+            </a>
           </p>
         </div>
       </div>

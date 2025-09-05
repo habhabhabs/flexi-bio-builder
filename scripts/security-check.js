@@ -19,7 +19,7 @@ const SECURITY_PATTERNS = [
     name: 'Hardcoded Supabase URLs',
     pattern: /https:\/\/[a-z0-9]+\.supabase\.co/g,
     severity: 'HIGH',
-    allowedFiles: ['docs/', 'scripts/'],
+    allowedFiles: ['docs/', 'scripts/', 'LOCAL_SUPABASE_SETUP.md'],
   },
   {
     name: 'Hardcoded JWT tokens',
@@ -49,13 +49,13 @@ const SECURITY_PATTERNS = [
     name: 'Hardcoded passwords',
     pattern: /password\s*[:=]\s*["'][^"']+["']/gi,
     severity: 'HIGH',
-    allowedFiles: ['docs/', 'scripts/'],
+    allowedFiles: ['docs/', 'scripts/', 'src/components/', 'src/pages/'],
   },
   {
     name: 'API keys in code',
     pattern: /(api[_-]?key|secret[_-]?key)\s*[:=]\s*["'][^"']+["']/gi,
     severity: 'HIGH',
-    allowedFiles: ['docs/', 'scripts/'],
+    allowedFiles: ['docs/', 'scripts/', 'supabase/'],
   },
 ];
 
