@@ -14,7 +14,7 @@ export function ManifestUpdater({ profile }: ManifestUpdaterProps) {
       const baseUrl = window.location.origin;
       
       const manifestData = {
-        name: `${profile.display_name} - Personal Links` || 'Personal Links',
+        name: profile.display_name ? `${profile.display_name} - Personal Links` : 'Personal Links',
         short_name: profile.display_name || 'Personal Links',
         description: profile.bio || 'Personal links and contact information',
         start_url: `${baseUrl}/`,

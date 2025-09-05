@@ -75,8 +75,8 @@ export function MetaTags({ profile }: MetaTagsProps) {
     };
 
     const defaultOGTitle = hideFlexiBioReferences 
-      ? `${profile.display_name} - Personal Links` || 'Personal Links'
-      : `${profile.display_name} - FlexiBio Builder` || 'FlexiBio Builder - Enhanced Personal Linktree';
+      ? (profile.display_name ? `${profile.display_name} - Personal Links` : 'Personal Links')
+      : (profile.display_name ? `${profile.display_name} - FlexiBio Builder` : 'FlexiBio Builder - Enhanced Personal Linktree');
     const defaultOGDescription = hideFlexiBioReferences
       ? profile.bio || 'Personal links and contact information'
       : profile.bio || 'Enhanced personal linktree application built with React + Supabase';
@@ -100,8 +100,8 @@ export function MetaTags({ profile }: MetaTagsProps) {
     };
 
     const defaultTwitterTitle = hideFlexiBioReferences 
-      ? `${profile.display_name} - Personal Links` || 'Personal Links'
-      : `${profile.display_name} - FlexiBio Builder` || 'FlexiBio Builder - Enhanced Personal Linktree';
+      ? (profile.display_name ? `${profile.display_name} - Personal Links` : 'Personal Links')
+      : (profile.display_name ? `${profile.display_name} - FlexiBio Builder` : 'FlexiBio Builder - Enhanced Personal Linktree');
     const defaultTwitterDescription = hideFlexiBioReferences
       ? profile.bio || 'Personal links and contact information'
       : profile.bio || 'Enhanced personal linktree application built with React + Supabase';

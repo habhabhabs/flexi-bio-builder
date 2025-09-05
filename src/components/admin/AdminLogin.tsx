@@ -89,8 +89,8 @@ export function AdminLogin() {
 
       setMessage('Password reset email sent! Check your inbox for instructions.');
       toast.success('Password reset email sent to your inbox!');
-    } catch (error: any) {
-      const errorMessage = error.message || 'Failed to send password reset email';
+    } catch (error: unknown) {
+      const errorMessage = (error as Error).message || 'Failed to send password reset email';
       setMessage(errorMessage);
       toast.error(errorMessage);
     } finally {

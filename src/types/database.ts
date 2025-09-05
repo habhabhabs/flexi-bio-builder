@@ -8,7 +8,7 @@ export interface Link {
   is_active: boolean;
   click_count: number;
   position: number;
-  style_override: any;
+  style_override: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
 }
